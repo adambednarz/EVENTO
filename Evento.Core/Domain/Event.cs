@@ -22,11 +22,28 @@ namespace Evento.Core.Domain
             DateTime startDate, DateTime endDate)
         {
             Id = id;
-            Name = name;
+            SetName(name);
+            SetDescription(description);
             Description = description;
             StartDate = startDate;
             EndDate = endDate;
             CreatedAt = DateTime.UtcNow;
+        }
+
+        public void SetName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                throw new Exception("Value of name can not be null or empty");
+
+            Name = name;
+        }
+
+        public void SetDescription(string description)
+        {
+            if (string.IsNullOrEmpty(description))
+                throw new Exception("Value of name can not be null or empty");
+
+            Description = description;
         }
 
         public void AddTickets(int amount, decimal price)
