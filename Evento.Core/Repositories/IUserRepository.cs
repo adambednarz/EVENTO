@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Evento.Core.Repositories
 {
-    public interface IUserReposiotory
+    public interface IUserRepository
     {
         Task<User> GetAsync(Guid id);
         Task<User> GetAsync(string email);

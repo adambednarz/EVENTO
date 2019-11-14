@@ -1,4 +1,5 @@
-﻿using Evento.Core.Repositories;
+﻿using AutoMapper;
+using Evento.Core.Repositories;
 using Evento.Infrastructure.Dto;
 using Evento.Infrastructure.Services.Interfaces;
 using System;
@@ -11,11 +12,14 @@ namespace Evento.Infrastructure.Services
 {
     public class EventService : IEventService
     {
-        private IEventRepository _eventRepository;
+        private readonly IEventRepository _eventRepository;
+        private readonly IMapper _mapper;
 
-        public  EventService(IEventRepository eventRepository)
+        public  EventService(IEventRepository eventRepository, 
+            IMapper mapper)
         {
             _eventRepository = eventRepository;
+            _mapper = mapper;
         }
 
 
@@ -49,15 +53,18 @@ namespace Evento.Infrastructure.Services
             if (@event == null)
                 return null;
 
-            return new EventDto
-            {
-                Id = @event.Id,
-                Name = @event.Name,
-                Description = @event.Description,
-                StartDate = @event.StartDate,
-                EndDate = @event.EndDate,
-                TicketAmount = @event.Tickets.Count()
-            };
+
+            return _mapper.Map<EventDto>(@event); 
+            
+            //return new EventDto
+            //{
+            //    Id = @event.Id,
+            //    Name = @event.Name,
+            //    Description = @event.Description,
+            //    StartDate = @event.StartDate,
+            //    EndDate = @event.EndDate,
+            //    TicketAmount = @event.Tickets.Count()
+            //};
         }
 
         public async Task<IEnumerable<EventDto>> BrowsAsync(string name = null)
@@ -66,15 +73,18 @@ namespace Evento.Infrastructure.Services
 
             if (events == null)
                 return null;
-            return events.Select(eve => new EventDto
-            {
-                Id = eve.Id,
-                Name = eve.Name,
-                Description = eve.Description,
-                StartDate = eve.StartDate,
-                EndDate = eve.EndDate,
-                TicketAmount = eve.Tickets.Count()
-            });
+
+            return _mapper.Map<IEnumerable<EventDto>>(events);
+            
+            //return events.Select(eve => new EventDto
+            //{
+            //    Id = eve.Id,
+            //    Name = eve.Name,
+            //    Description = eve.Description,
+            //    StartDate = eve.StartDate,
+            //    EndDate = eve.EndDate,
+            //    TicketAmount = eve.Tickets.Count()
+            //});
         }
 
         public async Task AddTicketsAsync(Guid eventId, int amount, decimal price)

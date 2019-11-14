@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Evento.Infrastructure.Repositories
 {
-    public class EventReposiotory : IEventRepository
+    public class EventRepository : IEventRepository
     {
         private static readonly ISet<Event> _events = new HashSet<Event>();
 

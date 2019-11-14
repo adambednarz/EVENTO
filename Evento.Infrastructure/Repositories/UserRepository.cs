@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Evento.Infrastructure.Repositories
 {
-    public class UserRepository : IUserReposiotory
+    public class UserRepository : IUserRepository
     {
         private readonly static ISet<User> _users = new HashSet<User>(); 
         public async Task AddAsync(User user)
