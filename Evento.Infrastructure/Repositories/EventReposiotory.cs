@@ -39,7 +39,6 @@ namespace Evento.Infrastructure.Repositories
             }
             return await Task.FromResult(events);
         }
-
         public async Task DeleteAsync(Event @event)
         {
             _events.Remove(@event);
