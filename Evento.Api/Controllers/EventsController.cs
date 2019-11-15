@@ -20,8 +20,21 @@ namespace Evento.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(string name)
         {
-            var @event = await _eventService.BrowsAsync(name);
+            var events = await _eventService.BrowsAsync(name);
 
+            return Json(events);
+        }
+
+        [HttpGet("{eventid}")]
+        public async Task<IActionResult> Get(Guid eventId)
+        {
+
+            var @event = await _eventService.GetAsync(eventId);
+
+            if(@event == null)
+            {
+                return NotFound();
+            }
             return Json(@event);
         }
     }
