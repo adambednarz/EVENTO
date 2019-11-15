@@ -109,7 +109,15 @@ namespace Evento.Infrastructure.Services
 
         public async Task UpdateAsync(Guid id, string name, string description)
         {
-            await Task.CompletedTask;
+            var @event = await _eventRepository.GetAsync(name);
+
+            if (@event != null)
+                throw new Exception($"Event with name '{name}' already exist");
+
+            @event = await _eventRepository.GetAsync(id);
+            @event.SetName(name);
+            @event.SetDescription(description);
+            await _eventRepository.UpdatedAsync(@event);
         }
     }
 }

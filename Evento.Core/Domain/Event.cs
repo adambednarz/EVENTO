@@ -18,6 +18,7 @@ namespace Evento.Core.Domain
         protected Event()
         {
         }
+
         public Event(Guid id, string name, string description, 
             DateTime startDate, DateTime endDate)
         {
@@ -27,6 +28,19 @@ namespace Evento.Core.Domain
             StartDate = startDate;
             EndDate = endDate;
             CreatedAt = DateTime.UtcNow;
+        }
+
+        public void SetName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new Exception("Event's name can not be empty");
+            Name = name;
+        }
+        public void SetDescription(string description)
+        {
+            if (string.IsNullOrWhiteSpace(description))
+                throw new Exception("Event's name can not be empty");
+            Description = description;
         }
 
         public void AddTickets(int amount, decimal price)

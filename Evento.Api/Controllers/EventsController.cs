@@ -40,7 +40,7 @@ namespace Evento.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Put([FromBody] CreateEvent command)
+        public async Task<IActionResult> Post([FromBody] CreateEvent command)
         {
             command.Id = Guid.NewGuid();
             await _eventService.CreateAsync(command.Id, command.Name,
@@ -48,6 +48,18 @@ namespace Evento.Api.Controllers
             await _eventService.AddTicketsAsync(command.Id, command.TicketsAmount, command.TiketPrice);
 
             return Created($"/events/{command.Id}", null);
+        }
+
+        [HttpPut("{eventId}")]
+        public async Task<IActionResult> Put(Guid eventId, [FromBody] UpdateEvent command)
+        {
+            var @event = _eventService.GetAsync(eventId);
+            if (@event == null)
+                return NotFound();
+
+            await _eventService.UpdateAsync(eventId, command.Name, command.Description);
+
+            return NoContent();
         }
     }
 }
