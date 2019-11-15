@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Evento.Core.Domain;
 using Evento.Core.Repositories;
 using Evento.Infrastructure.Dto;
 using Evento.Infrastructure.Services.Interfaces;
@@ -25,7 +26,12 @@ namespace Evento.Infrastructure.Services
 
         public async Task CreateAsync(Guid id, string name, string description, DateTime startDate, DateTime endDate)
         {
-            await Task.CompletedTask;
+            var @event = await _eventRepository.GetAsync(name);
+
+            if (@event != null)
+                throw new Exception($"Event with name: '{name}' already exist");
+            @event = new Event(id, name, description, startDate, endDate);
+            await _eventRepository.AddAsync(@event);
         }
 
         public async Task<EventDto> GetAsync(Guid id)
@@ -89,7 +95,11 @@ namespace Evento.Infrastructure.Services
 
         public async Task AddTicketsAsync(Guid eventId, int amount, decimal price)
         {
-            await Task.CompletedTask;
+            var @event = await _eventRepository.GetAsync(eventId);
+
+            if (@event == null)
+                throw new Exception("Can not add ticket to an event which not exist");
+            @event.AddTickets(amount, price);
         }
 
         public async Task RemoveAsync(Guid id)
