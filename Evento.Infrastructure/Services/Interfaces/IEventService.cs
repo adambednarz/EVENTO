@@ -10,7 +10,7 @@ namespace Evento.Infrastructure.Services.Interfaces
     {
         Task CreateAsync(Guid id, string name, string description,
             DateTime startDate, DateTime endDate);
-        Task<EventDto> GetAsync(Guid id);
+        Task<EventDetailsDto> GetAsync(Guid id);
         Task<EventDto> GetAsync(string name);
         Task<IEnumerable<EventDto>> BrowsAsync(string name = null);
         Task AddTicketsAsync(Guid eventId, int amount, decimal price);

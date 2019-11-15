@@ -34,22 +34,23 @@ namespace Evento.Infrastructure.Services
             await _eventRepository.AddAsync(@event);
         }
 
-        public async Task<EventDto> GetAsync(Guid id)
+        public async Task<EventDetailsDto> GetAsync(Guid id)
         {
             var @event = await _eventRepository.GetAsync(id);
 
             if (@event == null)
                 return null;
 
-            return new EventDto
-            {
-                Id = @event.Id,
-                Name = @event.Name,
-                Description = @event.Description,
-                StartDate = @event.StartDate,
-                EndDate = @event.EndDate,
-                TicketAmount = @event.Tickets.Count()
-            };
+            //return new EventDetailsDto
+            //{
+            //    Id = @event.Id,
+            //    Name = @event.Name,
+            //    Description = @event.Description,
+            //    StartDate = @event.StartDate,
+            //    EndDate = @event.EndDate,
+            //    TicketAmount = @event.Tickets.Count()
+            //};
+            return _mapper.Map<EventDetailsDto>(@event);
         }
 
         public async Task<EventDto> GetAsync(string name)
@@ -104,7 +105,8 @@ namespace Evento.Infrastructure.Services
 
         public async Task RemoveAsync(Guid id)
         {
-            await Task.CompletedTask;
+            var @event = await _eventRepository.GetAsync(id);
+            await _eventRepository.DeleteAsync(@event);
         }
 
         public async Task UpdateAsync(Guid id, string name, string description)

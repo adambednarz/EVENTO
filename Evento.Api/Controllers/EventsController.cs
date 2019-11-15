@@ -61,5 +61,17 @@ namespace Evento.Api.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete("{eventId}")]
+        public async Task<IActionResult> Delete(Guid eventId)
+        {
+            var @event = await _eventService.GetAsync(eventId);
+            if (@event == null)
+                return NotFound();
+
+            await _eventService.RemoveAsync(eventId);
+
+            return NoContent();
+        }
     }
 }
