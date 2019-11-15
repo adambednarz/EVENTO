@@ -57,7 +57,7 @@ namespace Evento.Api.Controllers
             {
                 return NotFound();
             }
-            await _eventService.UpdateAsync(command.EventId, command.Name, command.Description);
+            await _eventService.UpdateAsync(eventId, command.Name, command.Description);
 
             return NoContent();
         }
