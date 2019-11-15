@@ -9,7 +9,14 @@ namespace Evento.Infrastructure.Repositories
 {
     public class EventRepository : IEventRepository
     {
-        private static readonly ISet<Event> _events = new HashSet<Event>();
+        private static readonly ISet<Event> _events = new HashSet<Event>
+        {
+            new Event(Guid.NewGuid(), "Event1", "Event1 - description", DateTime.UtcNow.AddHours(11), DateTime.UtcNow.AddHours(20)),
+            new Event(Guid.NewGuid(), "Event2", "Event2 - description", DateTime.UtcNow.AddHours(11), DateTime.UtcNow.AddHours(20)),
+            new Event(Guid.NewGuid(), "Event3", "Event3 - description", DateTime.UtcNow.AddHours(11), DateTime.UtcNow.AddHours(20)),
+            new Event(Guid.NewGuid(), "Event4", "Event4 - description", DateTime.UtcNow.AddHours(11), DateTime.UtcNow.AddHours(20)),
+            new Event(Guid.NewGuid(), "Event5", "Event5 - description", DateTime.UtcNow.AddDays(11), DateTime.UtcNow.AddDays(20))
+        };
 
         public async Task AddAsync(Event @event)
         {
