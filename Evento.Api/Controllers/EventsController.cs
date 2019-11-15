@@ -28,12 +28,22 @@ namespace Evento.Api.Controllers
             return Json(events);
         }
 
+        [HttpGet("{eventId}")]
+        public async Task<IActionResult> Get(Guid eventId)
+        {
+            var events = await _eventService.GetAsync(eventId);
+
+            return Json(events);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateEvent command)
         {
             command.EventId = Guid.NewGuid();
-            await _eventService.CreateAsync(command.EventId, command.Name, command.Description, command.StartDate, command.EndDate);
-            await _eventService.AddTicketsAsync(command.EventId, command.Amount, command.Price);
+            await _eventService.CreateAsync(command.EventId, command.Name, 
+                command.Description, command.StartDate, command.EndDate);
+            await _eventService.AddTicketsAsync(command.EventId, command.Tickets, 
+                command.Price);
 
             return Created($"/events/{command.EventId}", null);
         }
@@ -41,21 +51,29 @@ namespace Evento.Api.Controllers
         [HttpPut("{eventId}")]
         public async Task<IActionResult> Put(Guid eventId, [FromBody] UpdateEvent command)
         {
-            //if(command.EventId == null)
-            //{
-            //    return BadRequest();
-            //}
-
             var @event = _eventService.GetAsync(eventId);
 
             if(@event == null)
             {
-                return BadRequest();
+                return NotFound();
             }
             await _eventService.UpdateAsync(command.EventId, command.Name, command.Description);
 
             return NoContent();
-            
+        }
+
+        [HttpDelete("{eventId}")]
+        public async Task<IActionResult> Delete(Guid eventId)
+        {
+            var @event = _eventService.GetAsync(eventId);
+
+            if (@event == null)
+            {
+                return NotFound();
+            }
+            await _eventService.RemoveAsync(eventId);
+
+            return NoContent();
         }
     }
 }
