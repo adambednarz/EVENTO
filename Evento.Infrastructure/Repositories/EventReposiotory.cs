@@ -11,12 +11,11 @@ namespace Evento.Infrastructure.Repositories
     {
         private static readonly ISet<Event> _events = new HashSet<Event>
             {
-             new Event(Guid.NewGuid(), "Event1", "Event1 description", DateTime.UtcNow.AddHours(10), DateTime.UtcNow.AddHours(15)),
-             new Event(Guid.NewGuid(), "Event2", "Event2 description", DateTime.UtcNow.AddHours(10), DateTime.UtcNow.AddHours(15)),
-             new Event(Guid.NewGuid(), "Event3", "Event3 description", DateTime.UtcNow.AddHours(10), DateTime.UtcNow.AddHours(15)),
-             new Event(Guid.NewGuid(), "Event4", "Event4 description", DateTime.UtcNow.AddHours(10), DateTime.UtcNow.AddHours(15))
+                new Event(Guid.NewGuid(), "Event1", "Event1 - description", DateTime.UtcNow.AddDays(5), DateTime.UtcNow.AddDays(6)), 
+                new Event(Guid.NewGuid(), "Eve2", "Event2 - description", DateTime.UtcNow.AddDays(7), DateTime.UtcNow.AddDays(8)), 
+                new Event(Guid.NewGuid(), "Ev3", "Event3 - description", DateTime.UtcNow.AddDays(6), DateTime.UtcNow.AddDays(7)), 
+                new Event(Guid.NewGuid(), "E4", "Event4 - description", DateTime.UtcNow.AddDays(5), DateTime.UtcNow.AddDays(6)) 
             };
-
 
         public async Task AddAsync(Event @event)
         {
@@ -40,7 +39,6 @@ namespace Evento.Infrastructure.Repositories
             }
             return await Task.FromResult(events);
         }
-
         public async Task DeleteAsync(Event @event)
         {
             _events.Remove(@event);

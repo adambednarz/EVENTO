@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using Evento.Infrastructure.Commands;
 using Evento.Infrastructure.Commands.Events;
 using Evento.Infrastructure.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Evento.Api.Controllers
 {
-    [ApiController]
     [Route("[controller]")]
+    [ApiController]
     public class EventsController : Controller
     {
         private readonly IEventService _eventService;
@@ -19,11 +20,10 @@ namespace Evento.Api.Controllers
             _eventService = eventService;
         }
 
-
-        [HttpGet]
+        [HttpGet]        
         public async Task<IActionResult> Get(string name)
         {
-           var events = await _eventService.BrowsAsync(name);
+            var events = await _eventService.BrowsAsync(name);
 
             return Json(events);
         }
@@ -39,21 +39,25 @@ namespace Evento.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateEvent command)
         {
-            command.Id = Guid.NewGuid();
-            await _eventService.CreateAsync(command.Id, command.Name, 
+            command.EventId = Guid.NewGuid();
+            await _eventService.CreateAsync(command.EventId, command.Name, 
                 command.Description, command.StartDate, command.EndDate);
-            await _eventService.AddTicketsAsync(command.Id, 
-                command.TicketsAmount, command.TicketsPrice);
+            await _eventService.AddTicketsAsync(command.EventId, command.Tickets, 
+                command.Price);
 
-            return Created($"/events/{command.Id}", null);
+            return Created($"/events/{command.EventId}", null);
         }
 
         [HttpPut("{eventId}")]
-        public async Task<IActionResult> Post(Guid eventId, [FromBody] UpdateEvent command)
+        public async Task<IActionResult> Put(Guid eventId, [FromBody] UpdateEvent command)
         {
-            command.Id = eventId;
-            await _eventService.UpdateAsync(command.Id, command.Name, 
-                command.Description);
+            var @event = _eventService.GetAsync(eventId);
+
+            if(@event == null)
+            {
+                return NotFound();
+            }
+            await _eventService.UpdateAsync(eventId, command.Name, command.Description);
 
             return NoContent();
         }
@@ -61,7 +65,13 @@ namespace Evento.Api.Controllers
         [HttpDelete("{eventId}")]
         public async Task<IActionResult> Delete(Guid eventId)
         {
-             await _eventService.RemoveAsync(eventId);
+            var @event = _eventService.GetAsync(eventId);
+
+            if (@event == null)
+            {
+                return NotFound();
+            }
+            await _eventService.RemoveAsync(eventId);
 
             return NoContent();
         }

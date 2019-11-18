@@ -14,10 +14,9 @@ namespace Evento.Core.Domain
         public DateTime EndDate { get; protected set; }
         public DateTime UpdatedAt { get; protected set; }
         public IEnumerable<Ticket> Tickets => _tickets;
+        public IEnumerable<Ticket> PurchasedTickets => _tickets.Where(x => x.Purchased);
+        public IEnumerable<Ticket> AvailableTickets => _tickets.Except(PurchasedTickets);
         //public int TicketAmount { get; protected set; }
-        public IEnumerable<Ticket> AvaliableTickets => Tickets.Except(PurchasedTickets);
-        public IEnumerable<Ticket> PurchasedTickets => Tickets.Where(x => x.Purchased == true);
-
 
         protected Event()
         {
@@ -26,7 +25,8 @@ namespace Evento.Core.Domain
             DateTime startDate, DateTime endDate)
         {
             Id = id;
-            Name = name;
+            SetName(name);
+            SetDescription(description);
             Description = description;
             StartDate = startDate;
             EndDate = endDate;
@@ -36,7 +36,7 @@ namespace Evento.Core.Domain
         public void SetName(string name)
         {
             if (string.IsNullOrEmpty(name))
-                throw new Exception("Name can not be empty");
+                throw new Exception("Value of name can not be null or empty");
 
             Name = name;
         }
@@ -44,7 +44,7 @@ namespace Evento.Core.Domain
         public void SetDescription(string description)
         {
             if (string.IsNullOrEmpty(description))
-                throw new Exception("Name can not be empty");
+                throw new Exception("Value of name can not be null or empty");
 
             Description = description;
         }

@@ -28,14 +28,13 @@ namespace Evento.Infrastructure.Services
         {
             var @event = await _eventRepository.GetAsync(name);
 
-            if(@event != null)
+            if (@event != null)
             {
-                throw new Exception($"Event with name '{name}' already exist");
-            }
+                throw new Exception($"Event named: '{name}' already exist.");
+            };
 
             @event = new Event(id, name, description, startDate, endDate);
             await _eventRepository.AddAsync(@event);
-
         }
 
         public async Task<EventDetailsDto> GetAsync(Guid id)
@@ -45,23 +44,10 @@ namespace Evento.Infrastructure.Services
             if (@event == null)
                 return null;
 
-            
-            //return new EventDetailsDto
-            //{
-            //    Id = @event.Id,
-            //    Name = @event.Name,
-            //    Description = @event.Description,
-            //    StartDate = @event.StartDate,
-            //    EndDate = @event.EndDate,
-            //    TicketAmount = @event.Tickets.Count(),
-            //    PurchasedTickets = @event.PurchasedTickets.Count(),
-            //    AvaliableTickets = @event.AvaliableTickets.Count(),
-            //};
-
             return _mapper.Map<EventDetailsDto>(@event);
         }
 
-        public async Task<EventDto> GetAsync(string name)
+        public async Task<EventDetailsDto> GetAsync(string name)
         {
             var @event = await _eventRepository.GetAsync(name);
 
@@ -69,7 +55,7 @@ namespace Evento.Infrastructure.Services
                 return null;
 
 
-            return _mapper.Map<EventDto>(@event); 
+            return _mapper.Map<EventDetailsDto>(@event); 
             
             //return new EventDto
             //{
@@ -106,34 +92,32 @@ namespace Evento.Infrastructure.Services
         {
             var @event = await _eventRepository.GetAsync(eventId);
 
-            if (@event == null)
-                throw new Exception($"Event with id'{eventId}' does not exist.");
-
+            if(@event == null)
+            {
+                throw new Exception($"Event with id: '{eventId}' does not exist");
+            }
             @event.AddTickets(amount, price);
-
             await _eventRepository.UpdatedAsync(@event);
         }
 
         public async Task RemoveAsync(Guid id)
         {
             var @event = await _eventRepository.GetAsync(id);
-
             await _eventRepository.DeleteAsync(@event);
+            
         }
 
         public async Task UpdateAsync(Guid id, string name, string description)
         {
             var @event = await _eventRepository.GetAsync(name);
-
-            if (@event != null)
-                throw new Exception($"Event named: '{name}' already exist.");
-
+            if(@event != null)
+            {
+                throw new Exception($"Event with name: '{name}' already exist");
+            }
             @event = await _eventRepository.GetAsync(id);
             @event.SetName(name);
             @event.SetDescription(description);
-
             await _eventRepository.UpdatedAsync(@event);
-
         }
     }
 }
