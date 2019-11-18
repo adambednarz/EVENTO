@@ -29,14 +29,30 @@ namespace Evento.Infrastructure.Services
 
             return _mapper.Map<UserDto>(user);
         }
+        public async Task<IEnumerable<UserDto>> BrowseAsync( )
+        {
+            var users = await _userRepository.BrowseAsync();
+
+            if (users == null)
+                return null;
+
+            return _mapper.Map<IEnumerable<UserDto>>(users);
+        }
 
         public async Task LoginAsync(string email, string password)
         {
-            await Task.CompletedTask;
+            var user = await _userRepository.GetAsync(email);
+
+            if (user == null)
+                throw new Exception($"Invalid credentials.");
+
+            if (user.Password != password)
+                throw new Exception("Invalid credentials.");
+
         }
 
         public async Task RegisterAsync(Guid userId, string name, 
-            string email, string password, string role)
+            string email, string password, string role = "User")
         {
             var user = await _userRepository.GetAsync(email);
             if (user != null)

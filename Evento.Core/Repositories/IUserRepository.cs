@@ -10,7 +10,7 @@ namespace Evento.Core.Repositories
     {
         Task<User> GetAsync(Guid id);
         Task<User> GetAsync(string email);
-        Task<IEnumerable<User>> BrowseAsync(string name = "");
+        Task<IEnumerable<User>> BrowseAsync();
         Task AddAsync(User user);
         Task UpdatedAsync(User user);
         Task DeleteAsync(User user);

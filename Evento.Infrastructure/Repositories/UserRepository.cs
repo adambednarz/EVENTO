@@ -10,7 +10,13 @@ namespace Evento.Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly static ISet<User> _users = new HashSet<User>(); 
+        private readonly static ISet<User> _users = new HashSet<User>
+        {
+            new User(Guid.NewGuid(), "admin,","Adam Bednarz", "bednarz@gmail.com", "secret"),
+            new User(Guid.NewGuid(), "user", "User 2", "user2@gmail.com", "secret"),
+            new User(Guid.NewGuid(), "user", "User 3", "user3@gmail.com", "secret"),
+            new User(Guid.NewGuid(), "user", "User 4", "user4@gmail.com", "secret")
+        };
         public async Task AddAsync(User user)
         {
             _users.Add(user);
@@ -23,13 +29,9 @@ namespace Evento.Infrastructure.Repositories
             => await Task.FromResult(_users.SingleOrDefault(x => x.Email == email));
 
 
-        public async Task<IEnumerable<User>> BrowseAsync(string name = "")
+        public async Task<IEnumerable<User>> BrowseAsync()
         {
             var users = _users.AsEnumerable();
-            if(!string.IsNullOrWhiteSpace(name))
-            {
-                users = users.Where(x => x.Name.Contains(name));
-            }
 
             return await Task.FromResult(users);
         }
