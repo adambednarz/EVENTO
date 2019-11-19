@@ -8,6 +8,7 @@ using Evento.Infrastructure.Mapper;
 using Evento.Infrastructure.Repositories;
 using Evento.Infrastructure.Services;
 using Evento.Infrastructure.Services.Interfaces;
+using Evento.Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -24,9 +25,14 @@ namespace Evento.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IHostingEnvironment env)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables();
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -42,7 +48,14 @@ namespace Evento.Api
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(x => x.SerializerSettings.Formatting = Formatting.Indented);
 
+
             // ===== Add Jwt Authentication ========
+            var jwtSettingSection = Configuration.GetSection("Jwt");
+            services.Configure<JwtSettings>(jwtSettingSection);
+
+            var jwtSettings = jwtSettingSection.Get<JwtSettings>();
+            var key = Encoding.ASCII.GetBytes(jwtSettings.SecurityKey);
+
             services
                 .AddAuthentication(options =>
                 {
@@ -61,9 +74,9 @@ namespace Evento.Api
                         ValidateAudience = false,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = Configuration["Jwt:Issuer"],
-                        ValidAudience = Configuration["Jwt:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:SecurityKey"]))
+                        ValidIssuer = jwtSettings.Issuer,
+                        ValidAudience = jwtSettings.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(key)
                     };
                 });
         }
