@@ -2,6 +2,7 @@
 using Evento.Core.Domain;
 using Evento.Core.Repositories;
 using Evento.Infrastructure.Dto;
+using Evento.Infrastructure.Extensions;
 using Evento.Infrastructure.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -14,18 +15,18 @@ namespace Evento.Infrastructure.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        public UserService(IUserRepository userRepository, IMapper mapper)
+        private readonly IJwtHandler _jwtHandler;
+        public UserService(IUserRepository userRepository, IMapper mapper,
+            IJwtHandler jwtHandler)
         {
             _userRepository = userRepository;
             _mapper = mapper;
+            _jwtHandler = jwtHandler;
         }
 
         public async Task<UserDto> GetAsync(string email)
         {
-            var user = await _userRepository.GetAsync(email);
-
-            if (user == null)
-                return null;
+            var user = await _userRepository.GetOrFail(email);
 
             return _mapper.Map<UserDto>(user);
         }
@@ -39,15 +40,21 @@ namespace Evento.Infrastructure.Services
             return _mapper.Map<IEnumerable<UserDto>>(users);
         }
 
-        public async Task LoginAsync(string email, string password)
+        public async Task<TokenDto> LoginAsync(string email, string password)
         {
-            var user = await _userRepository.GetAsync(email);
-
-            if (user == null)
-                throw new Exception($"Invalid credentials.");
+            var user = await _userRepository.GetOrFail(email);
 
             if (user.Password != password)
                 throw new Exception("Invalid credentials.");
+
+            var jwt = _jwtHandler.CreateToken(user.Id, user.Role);
+
+            return new TokenDto
+            {
+                Token = jwt.Token,
+                Expires = jwt.Expires,
+                Role = user.Role
+            };
 
         }
 

@@ -44,7 +44,6 @@ namespace Evento.Api.Controllers
         }
 
         [HttpPost("register")]
-        //[HttpPost]
         public async Task<IActionResult> Post([FromBody] Register command)
         {
             command.Id = Guid.NewGuid();
@@ -55,12 +54,11 @@ namespace Evento.Api.Controllers
         }
 
         [HttpPost("login")]
-        //[HttpPost]
         public async Task<IActionResult> Post([FromBody] Login command)
         {
-            await _userService.LoginAsync(command.Email, command.Password);
+            var log = await _userService.LoginAsync(command.Email, command.Password);
 
-            return NoContent();
+            return Json(log);
         }
     }
 }
