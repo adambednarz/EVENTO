@@ -8,6 +8,7 @@ using Evento.Infrastructure.Mapper;
 using Evento.Infrastructure.Repositories;
 using Evento.Infrastructure.Services;
 using Evento.Infrastructure.Services.Interfaces;
+using Evento.Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -24,12 +25,17 @@ namespace Evento.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
         public IConfiguration Configuration { get; }
+        //public readonly IOptions<JwtSetting> _jwtSetting;
+        public Startup(IHostingEnvironment env)
+        { 
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsetting.{env.EnvironmentName}", optional: true)
+                .AddEnvironmentVariables();
+                Configuration = builder.Build();
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -40,24 +46,32 @@ namespace Evento.Api
             services.AddScoped<IUserService, UserService>();
             services.AddSingleton(AutoMapperConfig.Initialize());
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddJsonOptions(x => x.SerializerSettings.Formatting = Formatting.Indented);
+                    .AddJsonOptions(x => x.SerializerSettings.Formatting = Formatting.Indented);
+
+            var appSettingSection = Configuration.GetSection("jwt");
+            services.Configure<JwtSetting>(appSettingSection);
+            var jwtSettings = appSettingSection.Get<JwtSetting>();
+
 
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-                .AddJwtBearer(cfg => {
+                .AddJwtBearer(cfg =>
+                {
                     cfg.TokenValidationParameters = new TokenValidationParameters()
                     {
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("secret")),
-                        ValidIssuer = "https://localhost:44356",
+                        ValidateIssuer = false,
                         ValidateAudience = false,
                         ValidateIssuerSigningKey = true,
-                        ValidateLifetime = true
+                        ValidateLifetime = true,
+                        ValidIssuer = jwtSettings.Issuer,
+                        ValidAudience = jwtSettings.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
                     };
-
                 });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,7 +86,6 @@ namespace Evento.Api
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
