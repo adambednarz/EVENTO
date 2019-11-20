@@ -7,6 +7,6 @@ namespace Evento.Infrastructure.Services.Interfaces
 {
     public interface IJwtHandler
     {
-        JwtDto CreateJwtToken(Guid userId, string role);
+        JwtDto CreateToken(Guid userId, string role);
     }
 }

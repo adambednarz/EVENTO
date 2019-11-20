@@ -25,17 +25,17 @@ namespace Evento.Api
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; }
-        //public readonly IOptions<JwtSetting> _jwtSetting;
         public Startup(IHostingEnvironment env)
-        { 
+        {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsetting.{env.EnvironmentName}", optional: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables();
-                Configuration = builder.Build();
+            Configuration = builder.Build();
         }
+
+        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -46,32 +46,39 @@ namespace Evento.Api
             services.AddScoped<IUserService, UserService>();
             services.AddSingleton(AutoMapperConfig.Initialize());
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                    .AddJsonOptions(x => x.SerializerSettings.Formatting = Formatting.Indented);
-
-            var appSettingSection = Configuration.GetSection("jwt");
-            services.Configure<JwtSetting>(appSettingSection);
-            var jwtSettings = appSettingSection.Get<JwtSetting>();
+                .AddJsonOptions(x => x.SerializerSettings.Formatting = Formatting.Indented);
 
 
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
+            // ===== Add Jwt Authentication ========
+            var jwtSettingSection = Configuration.GetSection("Jwt");
+            services.Configure<JwtSettings>(jwtSettingSection);
+
+            var jwtSettings = jwtSettingSection.Get<JwtSettings>();
+            var key = Encoding.ASCII.GetBytes(jwtSettings.SecurityKey);
+
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+                })
                 .AddJwtBearer(cfg =>
                 {
-                    cfg.TokenValidationParameters = new TokenValidationParameters()
+                    cfg.RequireHttpsMetadata = false;
+                    cfg.SaveToken = true;
+                    cfg.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuer = false,
+                        ValidateIssuer = true,
                         ValidateAudience = false,
-                        ValidateIssuerSigningKey = true,
                         ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
                         ValidIssuer = jwtSettings.Issuer,
                         ValidAudience = jwtSettings.Audience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
+                        IssuerSigningKey = new SymmetricSecurityKey(key)
                     };
                 });
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,11 +88,12 @@ namespace Evento.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
+            
             {
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
