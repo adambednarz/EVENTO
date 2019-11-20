@@ -2,6 +2,7 @@
 using Evento.Core.Domain;
 using Evento.Core.Repositories;
 using Evento.Infrastructure.Dto;
+using Evento.Infrastructure.Extensions;
 using Evento.Infrastructure.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,13 @@ namespace Evento.Infrastructure.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        public UserService(IUserRepository userRepository, IMapper mapper)
+        private readonly IJwtHandler _jwtHandler;
+        public UserService(IUserRepository userRepository, IMapper mapper,
+            IJwtHandler jwthandler)
         {
             _userRepository = userRepository;
             _mapper = mapper;
+            _jwtHandler = jwthandler;
         }
 
         public async Task<UserDto> GetAsync(string email)
@@ -29,6 +33,14 @@ namespace Evento.Infrastructure.Services
 
             return _mapper.Map<UserDto>(user);
         }
+
+        public async Task<UserDto> GetUserAsync(Guid id)
+        {
+            var user = await _userRepository.GetOrFailAsync(id);
+
+            return _mapper.Map<UserDto>(user);
+        }
+
         public async Task<IEnumerable<UserDto>> BrowseAsync( )
         {
             var users = await _userRepository.BrowseAsync();
@@ -39,7 +51,7 @@ namespace Evento.Infrastructure.Services
             return _mapper.Map<IEnumerable<UserDto>>(users);
         }
 
-        public async Task LoginAsync(string email, string password)
+        public async Task<TokenDto> LoginAsync(string email, string password)
         {
             var user = await _userRepository.GetAsync(email);
 
@@ -48,6 +60,15 @@ namespace Evento.Infrastructure.Services
 
             if (user.Password != password)
                 throw new Exception("Invalid credentials.");
+
+            var jwt =  _jwtHandler.CreateToken(user.Id, user.Role);
+
+            return new TokenDto
+            {
+                Token = jwt.Token,
+                Expires = jwt.Expires,
+                Role = user.Role
+            };
 
         }
 

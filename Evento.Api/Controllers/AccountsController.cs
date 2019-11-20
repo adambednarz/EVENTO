@@ -4,14 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Evento.Infrastructure.Commands.Users;
 using Evento.Infrastructure.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Evento.Api.Controllers
 {
-    [Route("[controller]")]
-    [ApiController]
-    public class AccountsController : Controller
+    public class AccountsController : ApiControllerBase
     {
         private readonly IUserService _userService;
         public AccountsController(IUserService userService)
@@ -20,20 +19,21 @@ namespace Evento.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Get()
         {
-            var user = await _userService.BrowseAsync();
+            var user = await _userService.GetUserAsync(UserId);
 
             return Json(user);
         }
 
-        [HttpGet("{tickets}")]
-        public async Task<IActionResult> GetTickets()
-        {
-            var user = await _userService.BrowseAsync();
+        //[HttpGet("{tickets}")]
+        //public async Task<IActionResult> GetTickets()
+        //{
+        //    var user = await _userService.BrowseAsync();
 
-            return Json(user);
-        }
+        //    return Json(user);
+        //}
 
         [HttpGet("{email}")]
         public async Task<IActionResult> Get(string email)
@@ -44,7 +44,6 @@ namespace Evento.Api.Controllers
         }
 
         [HttpPost("register")]
-        //[HttpPost]
         public async Task<IActionResult> Post([FromBody] Register command)
         {
             command.Id = Guid.NewGuid();
@@ -55,12 +54,11 @@ namespace Evento.Api.Controllers
         }
 
         [HttpPost("login")]
-        //[HttpPost]
         public async Task<IActionResult> Post([FromBody] Login command)
         {
-            await _userService.LoginAsync(command.Email, command.Password);
+            var log = await _userService.LoginAsync(command.Email, command.Password);
 
-            return NoContent();
+            return Json(log);
         }
     }
 }
