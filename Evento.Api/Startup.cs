@@ -40,6 +40,7 @@ namespace Evento.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthorization(x => x.AddPolicy("HasAdminRole", p => p.RequireRole("admin")));
             services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IEventService, EventService>();
@@ -49,10 +50,11 @@ namespace Evento.Api
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(x => x.SerializerSettings.Formatting = Formatting.Indented);
 
-            var appSettingsSection = Configuration.GetSection("Jwt");
-            services.Configure<JwtSettings>(appSettingsSection);
-            //var jwtSettings = appSettingsSection.Get<JwtSettings>();
-            var jwtSettings = new JwtSettings();
+            var appSettingSection = Configuration.GetSection("Jwt");
+            services.Configure<JwtSettings>(appSettingSection);
+            var jwtSettings = appSettingSection.Get<JwtSettings>();
+            //var jwtSettings = new JwtSettings();
+
 
             services
                 .AddAuthentication(options =>

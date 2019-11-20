@@ -18,6 +18,15 @@ namespace Evento.Infrastructure.Extensions
 
             return user;
         }
+        public static async Task<User> GetOrFail(this IUserRepository userRepository, Guid userId)
+        {
+            var user = await userRepository.GetAsync(userId);
+
+            if (user == null)
+                throw new Exception($"User with id: '{userId}' does not exist.");
+
+            return user;
+        }
 
         public static async Task<Event> GetOrFail(this IEventRepository eventRepository, Guid userId)
         {

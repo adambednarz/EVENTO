@@ -24,12 +24,20 @@ namespace Evento.Infrastructure.Services
             _jwtHandler = jwtHandler;
         }
 
+        public async Task<UserDto> GetAsync(Guid userId)
+        {
+            var user = await _userRepository.GetOrFail(userId);
+
+            return _mapper.Map<UserDto>(user);
+        }
+
         public async Task<UserDto> GetAsync(string email)
         {
             var user = await _userRepository.GetOrFail(email);
 
             return _mapper.Map<UserDto>(user);
         }
+
         public async Task<IEnumerable<UserDto>> BrowseAsync( )
         {
             var users = await _userRepository.BrowseAsync();
