@@ -58,5 +58,33 @@ namespace Evento.Core.Domain
                 seating++;
             }
         }
+
+        public void  PurchaseTickets(User user, int amount)
+        {
+            if (AvailableTickets.Count() < amount)
+                throw new Exception("Not enough available tickets to purchase.");
+
+            var tickets = AvailableTickets.Take(amount);
+            foreach (var ticket in tickets)
+            {
+                ticket.Purchase(user);
+            }
+        }
+
+        public void CancelPurchasedTickets(User user, int amount)
+        {
+            var tickets = GetTicketsPurchasedByUser(user);
+            if (tickets.Count() < amount)
+                throw new Exception($"Not enough purchased tickets to be canceled '{amount}' by; '{user.Name}'.");
+            tickets = tickets.TakeLast(amount);
+
+            foreach (var ticket in tickets)
+            {
+                ticket.Cancel();
+            }
+        }
+
+        public IEnumerable<Ticket> GetTicketsPurchasedByUser(User user)
+            => PurchasedTickets.Where(x => x.UserId == user.Id);
     }
 }

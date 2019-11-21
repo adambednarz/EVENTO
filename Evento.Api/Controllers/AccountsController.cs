@@ -13,9 +13,12 @@ namespace Evento.Api.Controllers
     public class AccountsController : ApiControllerBase
     {
         private readonly IUserService _userService;
-        public AccountsController(IUserService userService)
+        private readonly ITicketService _ticketService;
+        public AccountsController(IUserService userService,
+            ITicketService ticketService)
         {
             _userService = userService;
+            _ticketService = ticketService;
         }
 
         [HttpGet]
@@ -27,13 +30,13 @@ namespace Evento.Api.Controllers
             return Json(user);
         }
 
-        //[HttpGet("{tickets}")]
-        //public async Task<IActionResult> GetTickets()
-        //{
-        //    var user = await _userService.BrowseAsync();
+        [HttpGet("tickets")]
+        public async Task<IActionResult> GetTicketsForUser()
+        {
+            var user = await _ticketService.GetTicketsForUser(UserId);
 
-        //    return Json(user);
-        //}
+            return Json(user);
+        }
 
         [HttpGet("{email}")]
         public async Task<IActionResult> Get(string email)
