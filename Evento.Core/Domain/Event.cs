@@ -27,12 +27,11 @@ namespace Evento.Core.Domain
             Id = id;
             SetName(name);
             SetDescription(description);
-            Description = description;
-            StartDate = startDate;
-            EndDate = endDate;
+            SetDate(startDate, endDate);
             CreatedAt = DateTime.UtcNow;
         }
 
+        //========== Setting and validation methods ==========
         public void SetName(string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -49,6 +48,16 @@ namespace Evento.Core.Domain
             Description = description;
         }
 
+        public void SetDate(DateTime start, DateTime end)
+        {
+            if (end <= start)
+                throw new Exception("Start date can not be grater than end date");
+
+            StartDate = start;
+            EndDate = end;
+        }
+
+        //========== Other methods ==========
         public void AddTickets(int amount, decimal price)
         {
             var seating = _tickets.Count + 1;

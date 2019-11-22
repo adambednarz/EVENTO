@@ -42,7 +42,8 @@ namespace Evento.Infrastructure.Services
 
             foreach (var @event in events)
             {
-                var tickets = _mapper.Map<IEnumerable<TicketDetailsDto>>(@event.GetTicketsPurchasedByUser(user)).ToList();
+                var tickets = _mapper.Map<IEnumerable<TicketDetailsDto>>(@event.GetTicketsPurchasedByUser(user))
+                    .ToList();
                 tickets.ForEach(x =>
                 {
                     x.EventId = @event.Id;
