@@ -42,6 +42,7 @@ namespace Evento.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAuthorization(x => x.AddPolicy("HasAdminRole", p => p.RequireRole("admin")));
+            services.AddMemoryCache();
             services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IEventService, EventService>();
