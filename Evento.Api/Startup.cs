@@ -52,8 +52,10 @@ namespace Evento.Api
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITicketService, TicketService>();
+            services.AddScoped<IDataInitializer, DataInitializer>();
             services.AddSingleton<IJwtHandler, JwtHandler>();
             services.AddSingleton(AutoMapperConfig.Initialize());
+            services.Configure<DataInitializerSettings>(Configuration.GetSection("DataInitializer"));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(x => x.SerializerSettings.Formatting = Formatting.Indented);
@@ -111,11 +113,21 @@ namespace Evento.Api
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            SeedData(app);
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
             appLifeTime.ApplicationStopped.Register(() => Container.Dispose());
+        }
+
+        private void SeedData(IApplicationBuilder app)
+        {
+            var options = app.ApplicationServices.GetService<IOptions<DataInitializerSettings>>();
+            if (options.Value.SeedData)
+            {
+                var dataInitializer = app.ApplicationServices.GetService<IDataInitializer>();
+                dataInitializer.Seed();
+            }
         }
     }
 }
