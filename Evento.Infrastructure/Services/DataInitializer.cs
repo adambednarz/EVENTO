@@ -28,7 +28,7 @@ namespace Evento.Infrastructure.Services
             tasks.Add(_userService.RegisterAsync(Guid.NewGuid(), "Admin", "admin@admin.com", "secret", "admin"));
             _logger.LogInformation($"Created 2 accounts: User and Admin");
 
-            for (int i = 1; i =< 10; i++)
+            for (int i = 1; i <= 10; i++)
             {
                 var id = Guid.NewGuid();
                 var name = "Event " + $"{i}";

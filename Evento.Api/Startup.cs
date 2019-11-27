@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Evento.Api.Framework.Extensions;
 using Evento.Core.Repositories;
 using Evento.Infrastructure.Mapper;
 using Evento.Infrastructure.Repositories;
@@ -114,6 +115,7 @@ namespace Evento.Api
                 app.UseHsts();
             }
             SeedData(app);
+            app.UseErrorHandler();
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
