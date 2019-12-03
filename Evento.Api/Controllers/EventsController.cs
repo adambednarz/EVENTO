@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Evento.Infrastructure.Commands;
 using Evento.Infrastructure.Commands.Events;
@@ -33,7 +34,6 @@ namespace Evento.Api.Controllers
             _logger.LogInformation("Information log");
             _logger.LogError("Error log");
             _logger.LogCritical("Critical log");
-
 
             var events = await _eventService.BrowsAsync(name);
 
