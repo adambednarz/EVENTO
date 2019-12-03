@@ -12,7 +12,7 @@ namespace Evento.Infrastructure.Repositories
     {
         private readonly static ISet<User> _users = new HashSet<User>
         {
-            new User(Guid.NewGuid(), "admin,","Adam Bednarz", "bednarz@gmail.com", "secret"),
+            new User(Guid.NewGuid(), "admin","Adam Bednarz", "bednarz@gmail.com", "secret"),
             new User(Guid.NewGuid(), "user", "User 2", "user2@gmail.com", "secret"),
             new User(Guid.NewGuid(), "user", "User 3", "user3@gmail.com", "secret"),
             new User(Guid.NewGuid(), "user", "User 4", "user4@gmail.com", "secret")

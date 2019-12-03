@@ -44,8 +44,8 @@ namespace Evento.Core.Domain
             if (string.IsNullOrEmpty(role))
                 throw new Exception("Value of role can not be null or empty");
 
-            if (!_role.Contains(role))
-                throw new Exception($"New user can not heve '{role}' role.");
+            if (!_role.Contains(role.ToLowerInvariant()))
+                throw new Exception($"New user can not have '{role}' role.");
 
             Role = role;
         }
