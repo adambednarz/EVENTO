@@ -41,10 +41,10 @@ namespace Evento.Core.Domain
 
         public void SetRole(string role)
         {
-            if (string.IsNullOrEmpty(role))
+            if (string.IsNullOrEmpty(role.ToLowerInvariant()))
                 throw new Exception("Value of role can not be null or empty");
 
-            if (!_role.Contains(role))
+            if (!_role.Contains(role.ToLowerInvariant()))
                 throw new Exception($"New user can not heve '{role}' role.");
 
             Role = role;
