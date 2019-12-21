@@ -13,6 +13,7 @@ namespace Evento.Tests.Repositories
     {
         [Fact]
         public async Task adding_new_new_user_by_add_async_should_create_new_object_in_list()
+        public async Task AddAsync_UniqueValidUser_AddedToList()
         {
             //Arange
             var user = new User(Guid.NewGuid(), "admin", "admin", "email@gmail.com", "pasword");

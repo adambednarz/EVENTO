@@ -29,5 +29,6 @@ namespace Evento.Api
                         logging.AddNLog();
                     })
                 .UseStartup<Startup>();
+
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Evento.Infrastructure.Commands.Users
 {
-    public class Register
+    public class Register : ICommand
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

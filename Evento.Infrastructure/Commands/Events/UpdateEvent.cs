@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Evento.Infrastructure.Commands.Events
 {
-    public class UpdateEvent
+    public class UpdateEvent : ICommand
     {
         public Guid EventId { get; set; }
         public string Name { get; set; }
