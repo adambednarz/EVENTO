@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace Evento.Infrastructure.Services.Interfaces
 {
-    public interface IDataInitializer
+    public interface IDataInitializer 
     {
-        Task SeedAsync();
+        Task Seed();
     }
 }

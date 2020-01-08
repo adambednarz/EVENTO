@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Evento.Api.Framework.Extensions;
 using Evento.Core.Repositories;
 using Evento.Infrastructure.Mapper;
 using Evento.Infrastructure.Repositories;
@@ -29,7 +30,8 @@ namespace Evento.Api
     public class Startup
     {
         public IConfiguration Configuration { get; }
-        public IContainer Container { get; private set; }
+        public IContainer Container { get; private set; } 
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -45,7 +47,8 @@ namespace Evento.Api
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddAuthorization(x => x.AddPolicy("HasAdminRole", p => p.RequireRole("admin")));
-            services.AddScoped<IEventRepository, EventRepository>();
+            services.AddMemoryCache();
+            //services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<IUserService, UserService>();
@@ -53,9 +56,10 @@ namespace Evento.Api
             services.AddScoped<IDataInitializer, DataInitializer>();
             services.AddSingleton<IJwtHandler, JwtHandler>();
             services.AddSingleton(AutoMapperConfig.Initialize());
+            services.Configure<DataInitializerSettings>(Configuration.GetSection("DataInitializer"));
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(x => x.SerializerSettings.Formatting = Formatting.Indented);
-            services.Configure<AppSettings>(Configuration.GetSection("App"));
 
             // ===== Add Jwt Authentication ========
             var jwtSettingSection = Configuration.GetSection("Jwt");
@@ -90,37 +94,41 @@ namespace Evento.Api
 
             var builder = new ContainerBuilder();
             builder.Populate(services);
-            builder.RegisterType<UserService>().As<IUserService>().InstancePerLifetimeScope();
+            builder.RegisterType<EventRepository>().As<IEventRepository>().InstancePerLifetimeScope();
             Container = builder.Build();
+
             return new AutofacServiceProvider(Container);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env,
+            IApplicationLifetime appLifeTime)
         {
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseStatusCodePages();
             }
-            else
+            
             {
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
             SeedData(app);
+            app.UseErrorHandler();
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
+            appLifeTime.ApplicationStopped.Register(() => Container.Dispose());
         }
 
-        public void SeedData(IApplicationBuilder app)
+        private void SeedData(IApplicationBuilder app)
         {
-            var settings = app.ApplicationServices.GetService<IOptions<AppSettings>>();
-            if(settings.Value.SeedData)
+            var options = app.ApplicationServices.GetService<IOptions<DataInitializerSettings>>();
+            if (options.Value.SeedData)
             {
-                app.ApplicationServices.GetService<IDataInitializer>().SeedAsync();
+                var dataInitializer = app.ApplicationServices.GetService<IDataInitializer>();
+                dataInitializer.Seed();
             }
         }
     }

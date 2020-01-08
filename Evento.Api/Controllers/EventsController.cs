@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Evento.Infrastructure.Commands;
 using Evento.Infrastructure.Commands.Events;
+using Evento.Infrastructure.Dto;
 using Evento.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+
 
 namespace Evento.Api.Controllers
 {
@@ -17,17 +19,20 @@ namespace Evento.Api.Controllers
     {
         private readonly IEventService _eventService;
         private readonly ILogger<EventsController> _logger;
+        private readonly IMemoryCache _cache;
 
         public EventsController(IEventService eventService,
-            ILogger<EventsController> logger)
+            ILogger<EventsController> logger, IMemoryCache cache)
         {
             _eventService = eventService;
             _logger = logger;
+            _cache = cache;
         }
 
         [HttpGet]        
         public async Task<IActionResult> Get(string name)
         {
+            throw new ArgumentException("Ups...");
             //========== Logger test ===========
             _logger.LogTrace("Trace log");
             _logger.LogDebug("Debug log");
@@ -35,7 +40,19 @@ namespace Evento.Api.Controllers
             _logger.LogError("Error log");
             _logger.LogCritical("Critical log");
 
-            var events = await _eventService.BrowsAsync(name);
+            //========== Cache test ===========
+            var events = _cache.Get<IEnumerable<EventDto>>("events");
+            if(events == null)
+            {
+                _logger.LogInformation("Fetching from service");
+                events = await _eventService.BrowsAsync(name);
+                //_cache.Set("events", events, TimeSpan.FromMinutes(2));
+                _cache.Set<IEnumerable<EventDto>>("events", events, TimeSpan.FromSeconds(10));
+            }
+            else
+            {
+            _logger.LogInformation("Fetching from cache");
+            }
 
             return Json(events);
         }
