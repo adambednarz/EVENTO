@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evento.Core", "Evento.Core\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evento.Infrastructure", "Evento.Infrastructure\Evento.Infrastructure.csproj", "{6A10299A-7958-4C14-BE2B-96C4C9F421B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evento.Tests", "Evento.Tests\Evento.Tests.csproj", "{25267068-62A7-4595-921F-C505D823826D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evento.Tests", "Evento.Tests\Evento.Tests.csproj", "{25267068-62A7-4595-921F-C505D823826D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evento.Tests.EndToEnd", "Evento.EndToEnd\Evento.Tests.EndToEnd.csproj", "{FE8639BA-BE13-419F-A80D-6E4467735077}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evento.Tests.EndToEnd", "Evento.EndToEnd\Evento.Tests.EndToEnd.csproj", "{FE8639BA-BE13-419F-A80D-6E4467735077}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

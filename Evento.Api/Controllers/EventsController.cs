@@ -21,8 +21,8 @@ namespace Evento.Api.Controllers
         private readonly ILogger<EventsController> _logger;
         private readonly IMemoryCache _cache;
 
-        public EventsController(IEventService eventService,
-            ILogger<EventsController> logger, IMemoryCache cache)
+        public EventsController(ICommandDispatcher commandDispatcher, IEventService eventService,
+            ILogger<EventsController> logger, IMemoryCache cache) : base(commandDispatcher)
         {
             _eventService = eventService;
             _logger = logger;

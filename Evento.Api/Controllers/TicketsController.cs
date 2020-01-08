@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Evento.Infrastructure.Commands;
 using Evento.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,7 @@ namespace Evento.Api.Controllers
     public class TicketsController : ApiControllerBase
     {
         private readonly ITicketService _ticketService;
-        public TicketsController(ITicketService ticketService)
+        public TicketsController(ICommandDispatcher commandDispatcher, ITicketService ticketService) : base(commandDispatcher) 
         {
             _ticketService = ticketService;
         }
