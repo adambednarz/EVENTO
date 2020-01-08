@@ -7,6 +7,6 @@ namespace Evento.Infrastructure.Services.Interfaces
 {
     public interface IDataInitializer 
     {
-        Task Seed();
+        Task SeedAsync();
     }
 }

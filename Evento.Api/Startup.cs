@@ -128,7 +128,7 @@ namespace Evento.Api
             if (options.Value.SeedData)
             {
                 var dataInitializer = app.ApplicationServices.GetService<IDataInitializer>();
-                dataInitializer.Seed();
+                dataInitializer.SeedAsync();
             }
         }
     }
