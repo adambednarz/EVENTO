@@ -9,7 +9,7 @@ namespace Evento.Infrastructure.Services.Interfaces
 {
      public interface IUserService
     {
-        Task<UserDto> GetAsync(string email);
+        Task<UserDto> GetUserAsync(string email);
         Task<UserDto> GetUserAsync(Guid id);
         Task<IEnumerable<UserDto>> BrowseAsync();
         Task RegisterAsync(Guid userId, string name,

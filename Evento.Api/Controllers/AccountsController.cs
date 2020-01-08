@@ -42,7 +42,7 @@ namespace Evento.Api.Controllers
         [HttpGet("{email}")]
         public async Task<IActionResult> Get(string email)
         {
-            var user = await _userService.GetAsync(email);
+            var user = await _userService.GetUserAsync(email);
 
             return Json(user);
         }

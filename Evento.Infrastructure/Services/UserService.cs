@@ -24,12 +24,9 @@ namespace Evento.Infrastructure.Services
             _jwtHandler = jwthandler;
         }
 
-        public async Task<UserDto> GetAsync(string email)
+        public async Task<UserDto> GetUserAsync(string email)
         {
-            var user = await _userRepository.GetAsync(email);
-
-            if (user == null)
-                return null;
+            var user = await _userRepository.GetOrFailAsync(email);
 
             return _mapper.Map<UserDto>(user);
         }

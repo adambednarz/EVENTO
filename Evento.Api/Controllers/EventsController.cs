@@ -32,7 +32,7 @@ namespace Evento.Api.Controllers
         [HttpGet]        
         public async Task<IActionResult> Get(string name)
         {
-            throw new ArgumentException("Ups...");
+            //throw new ArgumentException("Ups...");
             //========== Logger test ===========
             _logger.LogTrace("Trace log");
             _logger.LogDebug("Debug log");

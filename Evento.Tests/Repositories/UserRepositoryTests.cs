@@ -12,19 +12,19 @@ namespace Evento.Tests.Repositories
     public class UserRepositoryTests
     {
         [Fact]
-        public async Task when_adding_new_user_it_should_be_added_correctly_to_the_list()
+        public async Task adding_new_new_user_by_add_async_should_create_new_object_in_list()
+        public async Task AddAsync_UniqueValidUser_AddedToList()
         {
             //Arange
-            var id = Guid.NewGuid();
-            var user = new User(id, "user", "Adam", "email@gmail.com", "secret");
-            IUserRepository repository = new UserRepository();
+            var user = new User(Guid.NewGuid(), "admin", "admin", "email@gmail.com", "pasword");
+            IUserRepository userRepository = new UserRepository();
 
             //Act
-            await repository.AddAsync(user);
+            await userRepository.AddAsync(user);
 
             //Assert
-            var existingUser = await repository.GetAsync(user.Id);
-            Assert.Equal(user, existingUser);
+            var existingUser = await userRepository.GetAsync("email@gmail.com");
+            Assert.Equal(existingUser, user);
         }
     }
 }
