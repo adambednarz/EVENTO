@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Evento.Infrastructure.Commands;
 using Evento.Infrastructure.Commands.Users;
@@ -15,14 +16,11 @@ namespace Evento.Api.Controllers
     {
         private readonly IUserService _userService;
         private readonly ITicketService _ticketService;
-        private readonly ICommandDispatcher _commandDispatcher;
-
-        public AccountsController(IUserService userService,
-            ITicketService ticketService, ICommandDispatcher commandDispatcher)
+        public AccountsController(ICommandDispatcher commandDispatcher, IUserService userService,
+            ITicketService ticketService) : base(commandDispatcher)
         {
             _userService = userService;
             _ticketService = ticketService;
-            _commandDispatcher = commandDispatcher;
         }
 
         [HttpGet]
@@ -51,17 +49,18 @@ namespace Evento.Api.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Post([FromBody] Register command)
+        public async Task<IActionResult> Post([FromBody] RegisterUser command)
         {
-            //command.Id = Guid.NewGuid();
+            command.Id = Guid.NewGuid();
+            await CommandDispatcher.DispatchAsync(command);
             //await _userService.RegisterAsync(command.Id, command.Name, 
             //    command.Email, command.Password, command.Role);
-            await _commandDispatcher.DispatchAsync(command);
+
             return Created($"/accounts/{command.Email}", null);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Post([FromBody] Login command)
+        public async Task<IActionResult> Post([FromBody] LoginUser command)
         {
             var log = await _userService.LoginAsync(command.Email, command.Password);
 

@@ -7,7 +7,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Evento.Api.Framework.Extensions;
 using Evento.Core.Repositories;
-using Evento.Infrastructure.IoC.Modules;
+using Evento.Infrastructure.IoC.Module;
 using Evento.Infrastructure.Mapper;
 using Evento.Infrastructure.Repositories;
 using Evento.Infrastructure.Services;
@@ -96,7 +96,7 @@ namespace Evento.Api
             var builder = new ContainerBuilder();
             builder.Populate(services);
             builder.RegisterType<EventRepository>().As<IEventRepository>().InstancePerLifetimeScope();
-            builder.RegisterModule<ComandModules>();
+            builder.RegisterModule<CommandModule>();
             Container = builder.Build();
 
             return new AutofacServiceProvider(Container);
@@ -130,7 +130,7 @@ namespace Evento.Api
             if (options.Value.SeedData)
             {
                 var dataInitializer = app.ApplicationServices.GetService<IDataInitializer>();
-                dataInitializer.Seed();
+                dataInitializer.SeedAsync();
             }
         }
     }

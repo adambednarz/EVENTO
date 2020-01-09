@@ -20,7 +20,7 @@ namespace Evento.Infrastructure.Services
             _userService = userService;
             _logger = logger;
         }
-        public async Task Seed()
+        public async Task SeedAsync()
         {
             _logger.LogInformation("Data initializing....");
             var tasks = new List<Task>();

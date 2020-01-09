@@ -3,6 +3,7 @@ using Evento.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Evento.Infrastructure.Repositories
@@ -33,7 +34,8 @@ namespace Evento.Infrastructure.Repositories
         public async Task<IEnumerable<Event>> BrowseAsync(string name = "")
         {
             var events = _events.AsEnumerable();
-            if(!string.IsNullOrWhiteSpace(name))
+            var assembly3= Assembly.GetEntryAssembly();
+            if (!string.IsNullOrWhiteSpace(name))
             {
                 events = events.Where(x => x.Name.Contains(name));
             }

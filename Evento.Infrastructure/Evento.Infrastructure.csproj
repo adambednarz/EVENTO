@@ -17,4 +17,8 @@
     <ProjectReference Include="..\Evento.Core\Evento.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Handlers\Event\" />
+  </ItemGroup>
+
 </Project>
