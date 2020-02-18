@@ -1,15 +1,16 @@
 # Evento
-Building the second serious application following the next course of Piotr Gankiewicz (link to the course at the end)
+Building the second serious application based on previous course of Piotr Gankiewicz (Passenger - which can also be found in my repo)
 
 ## Getting Started
 The repository contains application created in Visual Studio Code 2019 with C# (.Net Core) technology.
 
 ## What is Evento?
-Backend application created in ASP.Net Core whose main purpose is to enable users to buy tickets for the events
+Backend application created in ASP.Net Core whose main purpose is to enable users to buy tickets for the events.
+The working principle is very similar to website like eventim.pl or ebilet.pl etc.
 
 ## What is the purpose of coding Evento application?
 The main goal is to expand and consolidate the knowledge that I learned in a previous course by the same author
-(Passenger, which can also be found in my repository)
+(Passenger)
 
 Learning to build an application using the HTTP protocol.
 Learning clean architecture structure and design patterns, what is MVC and how to design RESTfull API and many more. 
@@ -36,6 +37,3 @@ The entire application is build from 5 different projects (using onion architect
 ## Thanks
 
 I would like to thank Piotr from this place for sharing such a great course. He opened my eyes and showed me how to program a professional.
- 
-Links:
-http://piotrgankiewicz.com/courses/becoming-a-software-developer/
