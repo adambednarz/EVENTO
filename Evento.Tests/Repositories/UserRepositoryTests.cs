@@ -12,6 +12,7 @@ namespace Evento.Tests.Repositories
     public class UserRepositoryTests
     {
         [Fact]
+        public async Task adding_new_new_user_by_add_async_should_create_new_object_in_list()
         public async Task AddAsync_UniqueValidUser_AddedToList()
         {
             //Arange
